@@ -342,9 +342,15 @@ void input_manager::init_keycode_mapping()
     add_keycode_pair( KEY_PPAGE,     "PPAGE" );
     add_keycode_pair( KEY_ESCAPE,    "ESC" );
     add_keycode_pair( KEY_BACKSPACE, "BACKSPACE" );
+    add_keycode_pair( KEY_DC,        "DELETE" );
     add_keycode_pair( KEY_HOME,      "HOME" );
     add_keycode_pair( KEY_BREAK,     "BREAK" );
     add_keycode_pair( KEY_END,       "END" );
+    add_keycode_pair( KEY_SDC,       "SHIFT-DEL" );
+    add_keycode_pair( KEY_SEND,      "SHIFT-END" );
+    add_keycode_pair( KEY_SHOME,     "SHIFT-HOME" );
+    add_keycode_pair( KEY_SLEFT,     "SHIFT-LEFT" );
+    add_keycode_pair( KEY_SRIGHT,    "SHIFT-RIGHT" );
     add_keycode_pair( '\n',          "RETURN" );
 
     // function keys, as defined by ncurses

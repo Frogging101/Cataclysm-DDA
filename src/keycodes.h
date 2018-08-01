@@ -33,6 +33,11 @@ enum keycode {
     KEY_ENTER,        /* Enter */
     KEY_BTAB,         /* Back tab key (shift + tab) */
     KEY_END,          /* End key */
+    KEY_SDC,          /* Shifted delete char key */
+    KEY_SEND,         /* Shifted end key */
+    KEY_SHOME,        /* Shifted home key */
+    KEY_SLEFT,        /* Shifted left arrow key */
+    KEY_SRIGHT,       /* Shifted right arrow */
     CATAKEY_MAX,
 };
 
