@@ -331,6 +331,14 @@ void input_manager::init_keycode_mapping()
         add_keycode_pair( c, name );
     }
 
+    // Pressing Control with a key generates that key's code minus 64.
+    // This works for keys corresponding to characters 64 (@) through 95 (_),
+    // each mapping to one of the 32 ASCII control characters.
+    // Map these control characters to CTRL-key.
+    for( char c = 64; c < 96; ++c ) {
+        add_keycode_pair( c-64, string_format( "CTRL-%c", c ) );
+    }
+
     add_keycode_pair( '\t',          "TAB" );
     add_keycode_pair( KEY_BTAB,      "BACKTAB" );
     add_keycode_pair( ' ',           "SPACE" );
