@@ -7,34 +7,12 @@
 #include <vector>
 #include <utility>
 
+#include "keycodes.h"
+
 namespace catacurses
 {
 class window;
 } // namespace catacurses
-
-static constexpr int KEY_ESCAPE     = 27;
-static constexpr int KEY_MIN        =
-    0x101;    /* minimum extended key value */ //<---------not used
-static constexpr int KEY_BREAK      =
-    0x101;    /* break key */                  //<---------not used
-static constexpr int KEY_DOWN       = 0x102;    /* down arrow */
-static constexpr int KEY_UP         = 0x103;    /* up arrow */
-static constexpr int KEY_LEFT       = 0x104;    /* left arrow */
-static constexpr int KEY_RIGHT      = 0x105;    /* right arrow*/
-static constexpr int KEY_HOME       =
-    0x106;    /* home key */                   //<---------not used
-static constexpr int KEY_BACKSPACE  =
-    0x107;    /* Backspace */                  //<---------not used
-static constexpr int KEY_DC         = 0x151;    /* Delete Character */
-inline constexpr int KEY_F( const int n )
-{
-    return 0x108 + n;    /* F1, F2, etc*/
-}
-static constexpr int KEY_NPAGE      = 0x152;    /* page down */
-static constexpr int KEY_PPAGE      = 0x153;    /* page up */
-static constexpr int KEY_ENTER      = 0x157;    /* enter */
-static constexpr int KEY_BTAB       = 0x161;    /* back-tab = shift + tab */
-static constexpr int KEY_END        = 0x168;    /* End */
 
 static constexpr int LEGEND_HEIGHT = 11;
 static constexpr int BORDER_SPACE = 2;

@@ -1,9 +1,5 @@
 #if !(defined TILES || defined _WIN32 || defined WINDOWS)
 
-// input.h must be include *before* the ncurses header. The later has some macro
-// defines that clash with the constants defined in input.h (e.g. KEY_UP).
-#include "input.h"
-
 // ncurses can define some functions as macros, but we need those identifiers
 // to be unchanged by the preprocessor, as we use them as function names.
 #define NCURSES_NOMACROS
@@ -23,6 +19,7 @@
 #include "color.h"
 
 #include "game_ui.h"
+#include "input.h"
 #include <stdexcept>
 
 extern int VIEW_OFFSET_X; // X position of terrain window
