@@ -238,6 +238,7 @@ static Uint32 dpad_delay = 100;   // Delay in milliseconds between registering a
 static bool dpad_continuous = false;  // Whether we're currently moving continuously with the dpad.
 static int lastdpad = ERR;      // Keeps track of the last dpad press.
 static int queued_dpad = ERR;   // Queued dpad press, for individual button presses.
+static bool ctrl_down = false;
 int fontwidth;          //the width of the font, background is always this size
 int fontheight;         //the height of the font, background is always this size
 static int TERMINAL_WIDTH;
@@ -1247,8 +1248,8 @@ int HandleDPad()
 /**
  * Translate SDL key codes to key identifiers used by ncurses, this
  * allows the input_manager to only consider those.
- * @return 0 if the input can not be translated (unknown key?),
- * -1 when a ALT+number sequence has been started,
+ * @return -1 if the input can not be translated (unknown key?),
+ * -2 when a ALT+number sequence has been started,
  * or something that a call to ncurses getch would return.
  */
 long sdl_keysym_to_curses( SDL_Keysym keysym )
@@ -1288,7 +1289,7 @@ long sdl_keysym_to_curses( SDL_Keysym keysym )
         case SDLK_RALT:
         case SDLK_LALT:
             begin_alt_code();
-            return -1;
+            return -2;
         // The following are simple translations:
         case SDLK_KP_ENTER:
         case SDLK_RETURN:
@@ -1367,11 +1368,25 @@ long sdl_keysym_to_curses( SDL_Keysym keysym )
             return KEY_F( 14 );
         case SDLK_F15:
             return KEY_F( 15 );
-        // Every other key is ignored as there is no curses constant for it.
         // TODO: add more if you find more.
         default:
-            return 0;
+            break;
     }
+    if( keysym.mod & KMOD_CTRL ) {
+        if( keysym.sym >= 97 && keysym.sym <= 122 ) {
+            // ctrl + letter emits an ASCII control character by shifting down
+            // the value of the uppercase letter - 64, or
+            // lowercase letter - 96 (see ASCII table)
+            return keysym.sym - 96;
+        } else if( keysym.sym >= 64 && keysym.sym <= 95 ) {
+            // Or more generally, ctrl generates a control character by
+            // shifting keycodes 64-95 down by 64 (emitting a code in the
+            // control range 0-31).
+            return keysym.sym - 64;
+        }
+    }
+    // Every other key is ignored as there is no curses constant for it.
+    return -1;
 }
 
 bool handle_resize(int w, int h)
@@ -1453,8 +1468,11 @@ void CheckMessages()
                 if(get_option<std::string>( "HIDE_CURSOR" ) != "show" && SDL_ShowCursor(-1)) {
                     SDL_ShowCursor(SDL_DISABLE);
                 }
+                if( ev.key.keysym.sym == SDLK_LCTRL || ev.key.keysym.sym == SDLK_RCTRL ) {
+                    ctrl_down = true;
+                }
                 const long lc = sdl_keysym_to_curses(ev.key.keysym);
-                if( lc <= 0 ) {
+                if( lc < 0 ) {
                     // a key we don't know in curses and won't handle.
                     break;
                 } else if( add_alt_code( lc ) ) {
@@ -1473,6 +1491,8 @@ void CheckMessages()
                         last_input = input_event(code, CATA_INPUT_KEYBOARD);
                         last_input.text = utf32_to_utf8(code);
                     }
+                } else if( ev.key.keysym.sym == SDLK_LCTRL || ev.key.keysym.sym == SDLK_RCTRL ) {
+                    ctrl_down = false;
                 }
             }
             break;
@@ -1481,7 +1501,16 @@ void CheckMessages()
                     const char *c = ev.text.text;
                     int len = strlen(ev.text.text);
                     if( len > 0 ) {
-                        const unsigned lc = UTF8_getch( &c, &len );
+                        unsigned lc = UTF8_getch( &c, &len );
+                        if( ctrl_down ) {
+                            if( lc >= 64 && lc < 96 ) {
+                                // CTRL shifts ASCII values 64-95 down 64
+                                lc -= 64;
+                            } else if( lc > 96 && lc <= 122) {
+                                // Equiv. lowercase get shifted down 64+32 (96)
+                                lc -= 96;
+                            }
+                        }
                         last_input = input_event( lc, CATA_INPUT_KEYBOARD );   
                     } else {
                         // no key pressed in this event
@@ -1497,7 +1526,16 @@ void CheckMessages()
                 const char *c = ev.edit.text;
                 int len = strlen( ev.edit.text );
                 if( len > 0 ) {
-                    const unsigned lc = UTF8_getch( &c, &len );
+                    unsigned lc = UTF8_getch( &c, &len );
+                    if( ctrl_down ) {
+                        if( lc >= 64 && lc < 96 ) {
+                            // CTRL shifts ASCII values 64-95 down 64
+                            lc -= 64;
+                        } else if( lc > 96 && lc <= 122) {
+                            // Equiv. lowercase get shifted down 64+32 (96)
+                            lc -= 96;
+                        }
+                    }
                     last_input = input_event( lc, CATA_INPUT_KEYBOARD );
                 } else {
                     // no key pressed in this event
