@@ -1298,6 +1298,9 @@ long sdl_keysym_to_curses( SDL_Keysym keysym )
         case SDLK_KP_BACKSPACE:
             return KEY_BACKSPACE;
         case SDLK_DELETE:
+            if( keysym.mod & KMOD_SHIFT ) {
+                return KEY_SDC;
+            }
             return KEY_DC;
         case SDLK_ESCAPE:
             return KEY_ESCAPE;
@@ -1307,8 +1310,14 @@ long sdl_keysym_to_curses( SDL_Keysym keysym )
             }
             return '\t';
         case SDLK_LEFT:
+            if( keysym.mod & KMOD_SHIFT ) {
+                return KEY_SLEFT;
+            }
             return KEY_LEFT;
         case SDLK_RIGHT:
+            if( keysym.mod & KMOD_SHIFT ) {
+                return KEY_SRIGHT;
+            }
             return KEY_RIGHT;
         case SDLK_UP:
             return KEY_UP;
@@ -1319,8 +1328,14 @@ long sdl_keysym_to_curses( SDL_Keysym keysym )
         case SDLK_PAGEDOWN:
             return KEY_NPAGE;
         case SDLK_HOME:
+            if( keysym.mod & KMOD_SHIFT ) {
+                return KEY_SHOME;
+            }
             return KEY_HOME;
         case SDLK_END:
+            if( keysym.mod & KMOD_SHIFT ) {
+                return KEY_SEND;
+            }
             return KEY_END;
         case SDLK_F1:
             return KEY_F( 1 );
